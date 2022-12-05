@@ -1,2 +1,2 @@
-# Dungeon-Koala-Idle-Clicker
+# Dungeon-Koala
 Idle clicker game using pygame
