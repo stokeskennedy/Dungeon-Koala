@@ -65,8 +65,8 @@ def drone():
 #loads background image
 background = pygame.image.load("dungeon.png")
 # Loads and loops background music
-pygame.mixer.music.load('synth_dungeon.wav')
-pygame.mixer.music.play(-1)
+#pygame.mixer.music.load('synth_dungeon.wav')
+#pygame.mixer.music.play(-1)
 
 
 def main():
