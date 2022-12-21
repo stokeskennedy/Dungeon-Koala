@@ -33,7 +33,7 @@ pygame.display.set_caption("Dungeon Koala")
 fsize = 18
 font = pygame.font.Font('freesansbold.ttf', fsize)
 
-# Button class definition
+# Class definitions
 class Button:
     def __init__(self, text, x_pos, y_pos, enabled):
         self.text = text
@@ -65,7 +65,9 @@ class Button:
             return True
         else:
             return False
-# Slime enemy class definition        
+    def __str__(self):
+        return self.x_pos, self.y_pos, self.enabled
+      
 class Slime:
     def __init__(self, x_pos, y_pos, color, enabled):
         self.x_pos = x_pos
@@ -102,7 +104,25 @@ class Slime:
             return True
         else:
             return False
+    def __str__(self):
+        return self.x_pos, self.y_pos, self.color, self.enabled
     
+class Player:
+    def __init__(self, hp, atk):
+        self.hp = hp
+        self.atk = atk
+    
+    def hp(self):
+        return self.hp
+    def atk(self):
+        return self.atk
+    def __str__(self):
+        return "Player HP: " + str(self.hp), "Player ATK:: " + str(self.atk)
+        
+class Enemy(Player):
+    def __str__(self):
+        return "Enemy HP: " + str(self.hp), "Enemy ATK: " + str(self.atk)
+          
 # function definitions
 def circle(display, color, x, y, radius):
     pygame.draw.circle(display, color, [x, y], radius)
@@ -118,7 +138,8 @@ def drawLifeBar(color, y_coord, level):
     level_text = font.render(str(level), True, black)
     screen.blit(level_text, (30, y_coord - 10))
 
-#def drawDamage(red, y_coord, draw, length):
+def drawDamage(red, y_coord, draw, length):
+    pass
   
 def DrawText(text, Textcolor, Rectcolor, x, y, fsize):
     text = font.render(text, True, Textcolor, Rectcolor)
@@ -128,11 +149,11 @@ def DrawText(text, Textcolor, Rectcolor, x, y, fsize):
 
 def drone():
     global droneATK
-    global HP
+    global e
+    e = Enemy(10, 1)
     droneATK = 0
-    HP = 10
     while True:
-        HP = HP - droneATK
+        e.hp = e.hp - droneATK
         time.sleep(0.1)
 
 # load background image
@@ -142,22 +163,22 @@ background = pygame.image.load("dungeon.png").convert()
 ##### pygame.mixer.music.play(-1)
 
 def main():
+    global p, e
     global clock
     global droneATK
     global coins
-    global HP
     global color
-    global swordATK
     global sword_cost
     global drone_cost
     color = blue
     slime_count = 0
     droneATK = 0
-    swordATK = 1
     sword_cost = 10
     drone_cost = 10
-    HP = 10
     game_running = True
+    
+    p = Player(100, 1)
+    e = Enemy(10, 1)
     
     while game_running:  
         
@@ -171,12 +192,12 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # attack slime
                 if slime.click_slime():
-                    HP -= swordATK
+                    e.hp -= p.atk
                 # select sword upgrade
                 if sword_button.check_click() and coins >= sword_cost:
                         coins = coins - sword_cost
                         sword_cost = sword_cost * 1.5
-                        swordATK = swordATK * 1.2
+                        p.atk = p.atk * 1.2
                         sword_cost = round(sword_cost, 0)
                 # select drone upgrade
                 if drone_button.check_click() and coins >= drone_cost:
@@ -185,9 +206,10 @@ def main():
                         droneATK = droneATK + 0.5
                         drone_cost = round(drone_cost, 0)
         # change color, reset HP, and increment coins & slime_count variables once HP is <= 0                
-        if HP <= 0:
+        if e.hp <= 0:
             color = (r,g,b)
-            HP = 10
+            p.hp = 100
+            e.hp = 10
             coins += 1
             slime_count += 1
 
@@ -202,7 +224,7 @@ def main():
         slime = Slime(75, 150, color, True)
         # draw life bar
         #### drawLifeBar(green, 330, 1)
-        DrawText("Slime HP = " + str(int(HP)), black, light_blue, 150, 330, fsize)
+        DrawText("Slime HP = " + str(int(e.hp)), black, light_blue, 150, 330, fsize)
         # upgrade button (drone)
         if coins >= drone_cost:
             drone_button = Button('Buy/Upgrade ATK Drone ' + str(int(drone_cost)), 5, 350, True)
@@ -214,6 +236,8 @@ def main():
         else:
             sword_button = Button("Upgrade Bamboo Sword "  + str(int(sword_cost)), 5, 400, False)
         
+        print(p.__str__())
+        print(e.__str__())
         pygame.display.flip()
         clock.tick(FPS)
  
