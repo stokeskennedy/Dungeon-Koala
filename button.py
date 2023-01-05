@@ -1,4 +1,4 @@
-from DungeonKoala import *
+from main import *
 
 class Button:
     def __init__(self, text, x_pos, y_pos, enabled):
